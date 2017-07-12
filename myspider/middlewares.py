@@ -58,9 +58,24 @@ class MyspiderSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class RotateUserAgentMiddleware(UserAgentMiddleware): #？？？
+class RotateUserAgentMiddleware(UserAgentMiddleware):
     def process_request(self, request, spider):
         ua = random.choice(UAL)
         if ua:
             logging.info('use the user-agent: ' + ua)
             request.headers.setdefault('User-Agent', ua)
+
+class CustomProxyMiddleware(object):
+    def process_request(self, request, spider):
+        # request.meta['proxy'] = 'https://%s'%proxy
+        url = request.url
+        # request.meta['proxy'] =
+        domainList = ['indonesia.go.id'] #被墙域名列表
+        for domain in domainList:
+            if domain in url:
+                request.meta['proxy'] = 'http://127.0.0.1:8118'
+            else:
+                pass
+                # request.meta['proxy'] = 'http://127.0.0.1:8118'
+        #         request.meta['proxy'] = 'http://139.196.36.156:3128'
+        # request.meta['proxy'] = default

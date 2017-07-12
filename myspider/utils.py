@@ -20,34 +20,34 @@ def duplicateFilter(options={}):
         return True
 
 
-def clearDB(sites=[], del_df=False):
-    df_coll = pymongo.MongoClient(DF['server'], DF['port'])[DF['db']][DF['collection']]
-    myspider_db = pymongo.MongoClient(SDB['server'], SDB['port'])[SDB['db']]
-
-    # 清空duplicate数据库
-    def delDF():
-        df_coll.delete_many({})
-
-    # 删除所有网站数据库
-    def delAllSites():
-        collections = myspider_db.collection_names()
-        for coll in collections:
-            myspider_db[coll].delete_many({})
-
-    # 删除部分网站数据库
-    def delManySites(list=[]):
-        collections = myspider_db.collection_names()
-        for l in list:
-            if l in collections:
-                coll = myspider_db[l]
-                coll.delete_many({})
-
-    if del_df:
-        delDF()
-    if 'all' in sites:
-        delAllSites()
-    else:
-        delManySites(sites)
-
-
-clearDB(['all'], True)
+# def clearDB(sites=[], del_df=False):
+#     df_coll = pymongo.MongoClient(DF['server'], DF['port'])[DF['db']][DF['collection']]
+#     myspider_db = pymongo.MongoClient(SDB['server'], SDB['port'])[SDB['db']]
+#
+#     # 清空duplicate数据库
+#     def delDF():
+#         df_coll.delete_many({})
+#
+#     # 删除所有网站数据库
+#     def delAllSites():
+#         collections = myspider_db.collection_names()
+#         for coll in collections:
+#             myspider_db[coll].delete_many({})
+#
+#     # 删除部分网站数据库
+#     def delManySites(list=[]):
+#         collections = myspider_db.collection_names()
+#         for l in list:
+#             if l in collections:
+#                 coll = myspider_db[l]
+#                 coll.delete_many({})
+#
+#     if del_df:
+#         delDF()
+#     if 'all' in sites:
+#         delAllSites()
+#     else:
+#         delManySites(sites)
+#
+#
+# clearDB(['all'], True)

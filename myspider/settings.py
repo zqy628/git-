@@ -57,8 +57,10 @@ COOKIES_ENABLED = False
 
 DOWNLOADER_MIDDLEWARES = {
     # 'myspider.middlewares.DuplicateFilterMiddleware': 543,
+    'myspider.middlewares.CustomProxyMiddleware':10,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'myspider.middlewares.RotateUserAgentMiddleware': 400
+    'myspider.middlewares.RotateUserAgentMiddleware': 30,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 20
 }
 
 # Enable or disable extensions
@@ -76,7 +78,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 ITEM_PIPELINES = {
     # 'myspider.pipelines.JsonlineWriterPipeline': 300,
-    'myspider.pipelines.MongoPipeline': 300,
+    'myspider.pipelines.MongoPipeline': 10,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -100,7 +102,7 @@ ITEM_PIPELINES = {
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-REDIRECT_ENABLED = False
+REDIRECT_ENABLED = True  #允许重定向
 DOWNLOAD_TIMEOUT = 20
 REACTOR_THREADPOOL_MAXSIZE = 20
 COMMANDS_MODULE = 'myspider.commands'

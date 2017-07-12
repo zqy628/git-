@@ -3,13 +3,13 @@
 import re
 import scrapy,pymongo
 from scrapy import Spider
-from myspider.items import DprItem
+from myspider.items import CommonItem
 from datetime import datetime
 import logging
 from myspider.utils import duplicateFilter as dF
-from myspider.config import MY_SPIDER_DB as SDB #
+from myspider.config import MY_SPIDER_DB as SDB
 
-sdb_collection = pymongo.MongoClient(SDB['server'], SDB['port'])[SDB['db']] #
+sdb_collection = pymongo.MongoClient(SDB['server'], SDB['port'])[SDB['db']]
 
 class DprSpider(Spider):
     name = 'dpr'
@@ -17,10 +17,8 @@ class DprSpider(Spider):
     start_urls = ['http://www.dpr.go.id/berita']
 
     def parse(self, response):
-        # if not sdb_collection['sites'].find_one({"site":self.name}):#新建站点表,增加查重
-        sdb_collection['sites'].insert_one({'site': self.name,'url': self.start_urls[0],'nickname':'印尼国会','classify':'政府网站'})
-        # else:
-        #     pass
+        if not sdb_collection['sites'].find_one({"site":self.name}):#新建站点表,增加查重
+            sdb_collection['sites'].insert_one({'site': self.name,'url': self.start_urls[0],'nickname':'印尼国会','classify':'政府网站'})
         base_url = '/berita/index/hal/'
         last_href = response.css('.pagination .text-right  li:last-child a::attr(href)').extract_first()
         last_index = int(re.findall(r'\d+$', last_href.encode())[0])
@@ -54,7 +52,7 @@ class DprSpider(Spider):
         #     f.write(response.body)
         date_box = response.css('.main-content .date::text').extract()[0]
         date = '-'.join(reversed(re.findall(r'\d+',date_box)))+'T00:00:00Z'
-        item = DprItem()
+        item = CommonItem()
         item["abstract"] = response.meta['abstract']
         web_body = response.css('body').extract()[0]
         # item['body'] = (filter(lambda x: x!='\n' and x!='\t' and x!='\r', web_body))#暂时注释body
@@ -62,15 +60,11 @@ class DprSpider(Spider):
         item['url'] = response.url
         item['site'] = self.name
         item['news_title'] = response.css('.main-content .row h3::text').extract()[0]
-        # item['news_title'] = response.xpath('//*[@id="detail"]/div/div/div[1]/h3/text()').extract()
         # item['news_content'] = response.css('.main-content .content').extract()[0]
         item['news_content'] = ''.join(response.xpath('//div[@class="content mb30"]//child::node()/text()').extract())
         # item['news_content'] = ' '.join(filter(lambda x: x!='\n' and x!='\t' and x!='\r', content))
         item['public_date'] = datetime.strptime(date,"%Y-%m-%dT%H:%M:%SZ")
         item['media'] = response.css('.main-content .date .green::text').extract()[0]
-        # if(response.url):
-        #     item['type'] = 'news'
-        # else:
         item['author'] = None
         item['type'] = 'berita'
         # item['abstract'] = item['news_content'][:140]+'...'#摘要

@@ -20,7 +20,4 @@ class CommonItem(Item):
     body = Field()
     abstract = Field()
     author = Field()
-
-# dpr.go.id网站对应的Item
-class DprItem(CommonItem):
     media = Field()
